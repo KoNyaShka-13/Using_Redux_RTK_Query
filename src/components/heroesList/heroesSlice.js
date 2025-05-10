@@ -1,3 +1,4 @@
+//Этот файл не действителен, остался для того, чтобы показать, что заменила библиотека query
 import {useHttp} from '../../hooks/http.hook';//Чтобы сделать запрос
 import { createAsyncThunk, createSlice, createEntityAdapter, createSelector } from "@reduxjs/toolkit";
 
@@ -59,7 +60,7 @@ export const filteredHeroesSelector = createSelector(//Оптимизация, �
     }
 );
 
-export const {
+export const {//Все это было заменено библиотекой query
     heroesFetching,
     heroesFetched,
     heroesFetchingError,

@@ -1,9 +1,7 @@
-import {useHttp} from '../../hooks/http.hook';//Чтобы сделать запрос
-import { useEffect, useCallback, useMemo } from 'react';//Чтобы сделать запрос вовремя
-import { useDispatch, useSelector } from 'react-redux';
+import { useCallback, useMemo } from 'react';//Чтобы сделать запрос вовремя
+import { useSelector } from 'react-redux';
 import { CSSTransition, TransitionGroup} from 'react-transition-group';
 
-import { heroDeleted, fetchHeroes } from './heroesSlice';//fetchHeroes не нужен, но к нему  пока подвязаны другие детали
 import { useGetHeroesQuery, useDeleteHeroMutation } from '../../api/apiSlice';//При помощи его можно будет генерировать большое количество свойств
 
 import HeroesListItem from "../heroesListItem/HeroesListItem";
@@ -35,19 +33,10 @@ const HeroesList = () => {//Используя RTK query не нужно зад�
         }
     }, [heroes, activeFilter]); //Так будет оставаться нужный фильтр и отображаться только нужные данные
 
-    const dispatch = useDispatch();
-    const {request} = useHttp();
-
-    useEffect(() => {
-        dispatch(fetchHeroes());
-        // eslint-disable-next-line  
-    }, []);
-
     // Удаление персонажа по его id
     const onDelete = useCallback(async (id) => {
         deleteHero(id);
-    }, [request,dispatch]);
-
+    },[deleteHero]);
 
     if (isLoading) {
         return <Spinner/>;
