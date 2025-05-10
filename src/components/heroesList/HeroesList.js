@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { CSSTransition, TransitionGroup} from 'react-transition-group';
 
 import { heroDeleted, fetchHeroes } from './heroesSlice';//fetchHeroes не нужен, но к нему  пока подвязаны другие детали
-import { useGetHeroesQuery } from '../../api/apiSlice';//При помощи его можно будет генерировать большое количество свойств
+import { useGetHeroesQuery, useDeleteHeroMutation } from '../../api/apiSlice';//При помощи его можно будет генерировать большое количество свойств
 
 import HeroesListItem from "../heroesListItem/HeroesListItem";
 import Spinner from '../spinner/Spinner';
@@ -19,6 +19,8 @@ const HeroesList = () => {//Используя RTK query не нужно зад�
         isLoading,
         isError,
     } = useGetHeroesQuery();
+
+    const [deleteHero] = useDeleteHeroMutation();
 
 //!Делаем все через RTK query, он не работает там, где чтото зависит от рук пользователя, по этому адаптируем, болше не знаю, как объяснить
     const activeFilter = useSelector(state => state.filters.activeFilter);
@@ -42,13 +44,8 @@ const HeroesList = () => {//Используя RTK query не нужно зад�
     }, []);
 
     // Удаление персонажа по его id
-    const onDelete = useCallback(async (id) => {//У нас и мемоизация(useCallback) и безопасность при async/awit
-        try {
-            await request(`http://localhost:3001/heroes/${id}`, "DELETE");
-            dispatch(heroDeleted(id));
-        } catch (e) {
-            console.error("Ошибка при удалении персонажа", e);
-        }
+    const onDelete = useCallback(async (id) => {
+        deleteHero(id);
     }, [request,dispatch]);
 
 

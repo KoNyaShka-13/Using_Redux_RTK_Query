@@ -19,9 +19,17 @@ export const apiSlice = createApi({//В сторе настраиваем это
             }),
             //При использовании тегов, действия связаны последовательно 
             invalidatesTags: ['Heroes']//3.Если данные в мутации изменились, то указываем, по какой метке можем получить актуальные данные
+        }), 
+        deleteHero: builder.mutation({
+            query: id => ({
+                url: `/heroes/${id}`,//Удалаяем по айдишнику
+                method: 'DELETE'
+            }),
+            invalidatesTags: ['Heroes']
         })
+
     })
 })
 //Будет гененрироваться хук на каждое новое действие
-export const {useGetHeroesQuery, useCreateHeroMutation} = apiSlice;//экспортируем ендпоинт, который создается выше
+export const {useGetHeroesQuery, useCreateHeroMutation, useDeleteHeroMutation} = apiSlice;//экспортируем ендпоинт, который создается выше
 //Достаем хук, который называется, как эндпоинт и приписываем тип, то есть в нашем случае запрос(query)

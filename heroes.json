@@ -17,18 +17,6 @@
       "name": "Морской герой",
       "description": "Как аквамен, но не из DC",
       "element": "water"
-    },
-    {
-      "id": "1129c58c-fb55-42b0-b629-cbc942c5976d",
-      "name": "KoNyaShka",
-      "description": "ооооо",
-      "element": "earth"
-    },
-    {
-      "id": "b0c45bca-11b6-4839-8f15-1123324fe2d2",
-      "name": "Основной",
-      "description": "щщщщщщщ",
-      "element": "fire"
     }
   ],
   "filters": [
