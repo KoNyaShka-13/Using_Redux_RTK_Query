@@ -1,40 +1,38 @@
 import {useHttp} from '../../hooks/http.hook';//Чтобы сделать запрос
-import { useEffect, useCallback } from 'react';//Чтобы сделать запрос вовремя
+import { useEffect, useCallback, useMemo } from 'react';//Чтобы сделать запрос вовремя
 import { useDispatch, useSelector } from 'react-redux';
 import { CSSTransition, TransitionGroup} from 'react-transition-group';
-//import { createSelector } from '@reduxjs/toolkit'
-//import { createSelector } from 'reselect'//Можно двумя способами
 
-//import { heroesFetching, heroesFetched, heroesFetchingError, heroDeleted } from '../../actions';
-//import { fetchHeroes } from '../../actions';
-import { heroDeleted, fetchHeroes, filteredHeroesSelector } from './heroesSlice';
+import { heroDeleted, fetchHeroes } from './heroesSlice';//fetchHeroes не нужен, но к нему  пока подвязаны другие детали
+import { useGetHeroesQuery } from '../../api/apiSlice';//При помощи его можно будет генерировать большое количество свойств
+
 import HeroesListItem from "../heroesListItem/HeroesListItem";
 import Spinner from '../spinner/Spinner';
 import './HeroesList.scss';
 
-// Задача для этого компонента:
-// При клике на "крестик" идет удаление персонажа из общего состояния
-// Усложненная задача:
-// Удаление идет и с json файла при помощи метода DELETE
 
-const HeroesList = () => {
-    //Такой вариант не подходит, так как он не оптимизирован
-    //const someState = useSelector(state => ({//В таком случае из-за хука при обновлении ввсе это будет перерисовываться
-    //    activeFilter: state.filters.activeFilter,
-    //    heroes: state.heroes.heroes
-    //}))
 
-    
+const HeroesList = () => {//Используя RTK query не нужно задействовать юзселектор и тп
 
-    //const filteredHeroes = useSelector(state => {
-    //    if (state.filters.activeFilter === 'all') {
-    //        return state.heroes.heroes;
-    //    } else {
-    //        return state.heroes.heroes.filter(item => item.element === state.activeFilter)
-    //    }
-    //})
-    const filteredHeroes = useSelector(filteredHeroesSelector);
-    const heroesLoadingStatus = useSelector(state => state.heroes.heroesLoadingStatus);//Хук, вытягиваем кусок кода для работы
+    const {//Получаем данные из среза
+        data: heroes = [],
+        isLoading,
+        isError,
+    } = useGetHeroesQuery();
+
+//!Делаем все через RTK query, он не работает там, где чтото зависит от рук пользователя, по этому адаптируем, болше не знаю, как объяснить
+    const activeFilter = useSelector(state => state.filters.activeFilter);
+
+    const filteredHeroes = useMemo(() => {//ЮЗмемо нужен при обновлении данных, если что-то новое будет, то обновится 
+        const filteredHeroes = heroes.slice();//Создаем копию массива и начинаем с ним работать
+        
+        if (activeFilter === 'all') {
+            return heroes;
+        } else {
+            return filteredHeroes.filter(item => item.element === activeFilter)
+        }
+    }, [heroes, activeFilter]); //Так будет оставаться нужный фильтр и отображаться только нужные данные
+
     const dispatch = useDispatch();
     const {request} = useHttp();
 
@@ -54,9 +52,9 @@ const HeroesList = () => {
     }, [request,dispatch]);
 
 
-    if (heroesLoadingStatus === "loading") {
+    if (isLoading) {
         return <Spinner/>;
-    } else if (heroesLoadingStatus === "error") {
+    } else if (isError) {
         return <h5 className="text-center mt-5">Ошибка загрузки</h5>
     }
 
